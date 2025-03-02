@@ -1,0 +1,4 @@
+The kaggle dataset used for this project can be found at the url:
+https://www.kaggle.com/datasets/garystafford/environmental-sensor-data-132k
+
+Maybe it is necessary to login to be able to download it.
