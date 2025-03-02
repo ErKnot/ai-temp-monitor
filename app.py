@@ -75,8 +75,8 @@ async def write_agent_messages():
         print("New warning messages found! We pass them to the agent...")
 
         warnings_log_list = update_warnings_log_list
-        # llm_message = get_agent_warnings(warnings_log_path)
-        llm_message = "dummy message"
+        llm_message = get_agent_warnings(warnings_log_path)
+        # llm_message = "dummy message"
         update_json_list(llm_messages_path, llm_message)
 
 

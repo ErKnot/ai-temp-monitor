@@ -1,4 +1,5 @@
 [
     "dummy message",
-    "dummy message"
+    "dummy message",
+    "Subject: Temperature Sensor Warning - Potential System Malfunction\n\nBody:\n\nAlert! Multiple temperature warnings have been triggered.\n\n**Time Period:** 2020-07-12 00:26:47 - 2020-07-12 00:39:53\n\n*   The temperature has dropped significantly below the lower threshold (17.0 \u00b0C), reaching as low as 6.8 \u00b0C.\n\n**Possible Cause:**\n\nThe consistent drop in temperature suggests a potential malfunction in the heating system, a failure in insulation, or an unexpected external influence causing rapid cooling. Please investigate immediately to prevent damage or further temperature fluctuations.\n"
 ]
