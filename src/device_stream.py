@@ -1,7 +1,7 @@
 from typing import Generator
 import pandas as pd
 
-def output_stream(dataframe: pd.DataFrame, stream_frequence: float = 0.1):
+def output_stream(dataframe: pd.DataFrame) -> Generator[dict]:
     """Generator that yield each row of a DataFrame as a dictionary"""
     for row in dataframe.itertuples():
         yield row._asdict()

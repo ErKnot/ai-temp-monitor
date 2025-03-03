@@ -5,7 +5,8 @@ import os
 from dotenv import load_dotenv
 
 # create the agent we will use
-class AI_temp_monitor_agent():
+class GeminiTempWarningMonitorAgent():
+    """A class to create a gemini ai agent that monitors temperature related warnings."""
     def __init__(self):
         load_dotenv()
 
@@ -21,11 +22,11 @@ class AI_temp_monitor_agent():
         self.system_instruction = agent_config["ai_assistant"]["system_instruction"] 
 
 
-    def load_warnings(self, warnings: list):
+    def load_warnings(self, warnings: list) -> None:
         self.content = self.content.format(warning=warnings)
 
 
-    def generate_content(self):
+    def generate_content(self) -> str:
         response = self.client.models.generate_content(
                 model='gemini-2.0-flash',
                 contents=self.content,
@@ -37,7 +38,7 @@ class AI_temp_monitor_agent():
         return response.text
 
 if __name__=="__main__":
-    agent = AI_temp_monitor_agent()
+    agent = GeminiTempWarningMonitorAgent()
     warning = "This is a warning message"
     agent.load_warnings(warning)
     print(agent.content)
