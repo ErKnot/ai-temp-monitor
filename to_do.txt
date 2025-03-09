@@ -1,0 +1,4 @@
+Create an agent that interprets the warning message of the sensor output to create some hypothesis about what could cause the warning. The agent should use methods like:
+-web scraping: check the local weather
+-check the context: info about the sensor.
+-check the history (all or just the warnings, to decide how to do)

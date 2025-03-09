@@ -1,5 +1,6 @@
-from data_streamer.device_output import output_stream
-from data_streamer.data.df import separate_devices
+from src.device_stream import output_stream
+# from data_streamer.data.df import separate_devices
+from src.data_preprocessing import preprocess_and_split_data
 import matplotlib
 matplotlib.use('Qt5Agg')  # Set the backend to Qt5Agg
 import matplotlib.pyplot as plt
@@ -17,7 +18,9 @@ ax.set_ylabel("Temperature (°C)")
 plt.xticks(rotation=90)
 
 # generate the data stream
-dfs_dict = separate_devices()
+# dfs_dict = separate_devices()
+df_path = "src/data/iot_telemetry_data.csv"
+dfs_dict = preprocess_and_split_data(df_path, "device", "ts", "ts")
 df = dfs_dict["df2"]
 device_output = output_stream(df)
 
