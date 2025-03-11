@@ -1,6 +1,6 @@
 from src.data_preprocessing import preprocess_and_split_data
 from src.device_stream import output_stream
-from src.my_warnings import check_temperature_warning, get_agent_warnings
+from src.my_warnings import check_temperature_warning
 from src.file_io import read_json_file, update_json_list, write_json_file
 from src.agent.tools.weather_tool import WeatherTool
 from src.agent.tools.writing_tool import WritingTool
@@ -56,30 +56,36 @@ async def write_agent_messages():
             print(f"There are no new warnings in {warnings_log_path}")
             continue
         
-        # Update the wornings_log list with the new warnings
+        # Update the wornings_log list with the new warnings and run the agent
         print("New warning messages found! We pass them to the agent...")
-
         warnings_log_list = update_warnings_log_list
-
-
-        # llm_message = get_agent_warnings(warnings_log_path)
-        # llm_message = "dummy message"
-        # update_json_list(llm_messages_path, llm_message)
+        
         agent_message = orchestrator.run(warnings_log_list)
         update_json_list(llm_messages_path, agent_message)
 
 
+async def graph():
+    # Launch the external Python script (file.py) as a subprocess.
+    process = await asyncio.create_subprocess_exec(
+        "python", "graph.py",
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE
+    )
+    stdout, stderr = await process.communicate()
+    if stdout:
+        print("Script output:", stdout.decode())
+    if stderr:
+        print("Script errors:", stderr.decode())
 async def main():
-    
-
     """Main async function to run data monitoring."""
+    
+    #Load the dataset and process it for the stream
     data_path = "src/data/iot_telemetry_data.csv"
     dfs_dict = preprocess_and_split_data(data_path, "device", "ts", "ts")
     df = dfs_dict["df1"]
     device_output = output_stream(df)
-
-
-
-    await asyncio.gather(write_warnings_log(device_output), write_agent_messages())
+    
+    # Start the stream, check the temperature and use the agent
+    await asyncio.gather(graph(), write_warnings_log(device_output), write_agent_messages())
 
 asyncio.run(main())

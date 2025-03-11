@@ -3,6 +3,8 @@ Create an agent that interprets the warning message of the sensor output to crea
 -check the context: info about the sensor.
 -check the history (all or just the warnings, to decide how to do)
 
+## TO CHANGE
+- right now the agent doesn't really know where the temperature it receive comes from. Need to add context in a way or the other.
 
 ## IMPROVEMENTS
 - The tools have a method description. where it is described what they do and wahat they need as input. This method is used to describe the tool to an LLM. Instead, write a proper docstring and pass it to the LLM.
