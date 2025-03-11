@@ -15,7 +15,14 @@ class WritingTool(Tool):
         return dedent(
         """
         Analize the warnings and context and provide possible causes. 
-        It take as input a string with the wornings and the context."
+        It take as input a string with the wornings and the context, for exemple: 
+        "
+        ### Warnings:
+        all the warnings
+
+        ### Context
+        the context
+        "
         """
         )       
     def use(self, prompt: str):
