@@ -2,6 +2,9 @@ from src.data_preprocessing import preprocess_and_split_data
 from src.device_stream import output_stream
 from src.my_warnings import check_temperature_warning, get_agent_warnings
 from src.file_io import read_json_file, update_json_list, write_json_file
+from src.agent.tools.weather_tool import WeatherTool
+from src.agent.tools.writing_tool import WritingTool
+from src.agent.orchestrator import AgentOrchestrator
 import asyncio
 
 lock = asyncio.Lock()
@@ -35,6 +38,9 @@ async def write_agent_messages():
     warnings_log_list = []
     warnings_log_path = "warnings_log.json"
     llm_messages_path = "llm_messages.json"
+    weather_tool = WeatherTool()
+    writing_tool = WritingTool()
+    orchestrator = AgentOrchestrator([weather_tool, writing_tool])
 
     while True:
         await asyncio.sleep(1)
@@ -54,17 +60,26 @@ async def write_agent_messages():
         print("New warning messages found! We pass them to the agent...")
 
         warnings_log_list = update_warnings_log_list
+
+
         # llm_message = get_agent_warnings(warnings_log_path)
-        llm_message = "dummy message"
-        update_json_list(llm_messages_path, llm_message)
+        # llm_message = "dummy message"
+        # update_json_list(llm_messages_path, llm_message)
+        agent_message = orchestrator.run(warnings_log_list)
+        update_json_list(llm_messages_path, agent_message)
 
 
 async def main():
+    
+
     """Main async function to run data monitoring."""
     data_path = "src/data/iot_telemetry_data.csv"
     dfs_dict = preprocess_and_split_data(data_path, "device", "ts", "ts")
     df = dfs_dict["df1"]
     device_output = output_stream(df)
+
+
+
     await asyncio.gather(write_warnings_log(device_output), write_agent_messages())
 
 asyncio.run(main())

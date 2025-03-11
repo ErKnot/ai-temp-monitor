@@ -47,7 +47,7 @@ You will be provided with the warnings to analyzen, a context that tracks previo
 - The original user input could contain multiple tasks.
 - Use the context to understand previous actions taken.
 - Read the context carefully before selecting the next step.
-- If no further action is required, set `action = "respond_to_user"`. 
+- If no further action is required, set `action = "respond_to_user"` and as 'input' copy the response ot the Writing Tool. 
 - If you decide to use a tool you will return the tool name in the form of {self.response_format}
 
 ```json
@@ -107,6 +107,6 @@ You will be provided with the warnings to analyzen, a context that tracks previo
             print(colored(f"Final response of orchestrator:\n{response}", "magenta"))
             if isinstance(response, dict) and response["action"] == "respond_to_user":
                 log_message(f"Reponse from Agent: {response["input"]}", "RESPONSE")
-                break
+                return response["input"]
             elif response == "No action or agent needed":
                 print("Response from Agent: ", response)
