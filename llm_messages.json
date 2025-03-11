@@ -3,5 +3,6 @@
     "dummy message",
     "Subject: Temperature Sensor Warning - Potential System Malfunction\n\nBody:\n\nAlert! Multiple temperature warnings have been triggered.\n\n**Time Period:** 2020-07-12 00:26:47 - 2020-07-12 00:39:53\n\n*   The temperature has dropped significantly below the lower threshold (17.0 \u00b0C), reaching as low as 6.8 \u00b0C.\n\n**Possible Cause:**\n\nThe consistent drop in temperature suggests a potential malfunction in the heating system, a failure in insulation, or an unexpected external influence causing rapid cooling. Please investigate immediately to prevent damage or further temperature fluctuations.\n",
     "Subject: Temperature Sensor Warning - Potential Cooling Issue\n\nBody:\n\nAlert! The temperature sensor has triggered the following warnings:\n\n**Time:** 2020-07-12 00:26:47 - 2020-07-12 00:39:53\n\n*   Temperature consistently below the lower threshold (17.0 \u00b0C). Recorded temperatures: 6.80 \u00b0C, 7.0 \u00b0C.\n\n**Possible Cause:**\n\nThe consistent low temperatures suggest a potential issue with the heating system or insulation. It is possible that the heating system is malfunctioning, is set to a very low value, or that there is a problem with the insulation allowing too much heat to escape. Please investigate to prevent potential damage from low temperatures.\n",
+    "dummy message",
     "dummy message"
 ]

@@ -1,4 +1,4 @@
-from src.singleagent.tools.base_tool import Tool
+from src.agent.tools.base_tool import Tool
 import httpx
 import os
 from dotenv import load_dotenv
