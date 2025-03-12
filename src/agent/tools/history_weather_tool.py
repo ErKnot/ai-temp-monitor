@@ -1,6 +1,7 @@
 from src.agent.tools.base_tool import Tool
 from dotenv import load_dotenv
-from datetime import date, delta
+from datetime import date, timedelta
+from textwrap import dedent
 import httpx
 import os
 
@@ -17,15 +18,20 @@ class HistoryWeatherTool(Tool):
                 """
                 ) 
 
-    def use(sefl, location: str):
-        starting_date = date.today() - timedelta(day=7) 
+    def use(self, location: str):
+        request_date = date.today() - timedelta(days=7) 
         load_dotenv()
         api_key = os.getenv("WEATHER_API")
         url = "https://api.weatherapi.com/v1/history.json"
         params = {
                 "key": api_key,
                 "q": location,
-                "dt": data
+                "dt": request_date
                 }
+
+        response = httpx.get(url, params=params)
+        data = response.json()
+        print(data)
+        
 
 

@@ -2,8 +2,9 @@ from src.data_preprocessing import preprocess_and_split_data
 from src.device_stream import output_stream
 from src.my_warnings import check_temperature_warning
 from src.file_io import read_json_file, update_json_list, write_json_file
-from src.agent.tools.weather_tool import WeatherTool
-from src.agent.tools.writing_tool import WritingTool
+from src.agent.tools import WeatherTool, WritingTool
+# from src.agent.tools.weather_tool import WeatherTool
+# from src.agent.tools.writing_tool import WritingTool
 from src.agent.orchestrator import AgentOrchestrator
 import asyncio
 

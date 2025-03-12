@@ -33,8 +33,3 @@ def preprocess_and_split_data(df_path: str, devices_column: str, ts_column: str,
 
     return dfs_dict
 
-if __name__ == "__main__":
-    path = "src/data/iot_telemetry_data.csv"
-    df_dict = preprocess_and_split_data(path, "device", "ts", "ts")
-    df0 = df_dict["df0"]
-    print(df0.head())
