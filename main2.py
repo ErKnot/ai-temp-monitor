@@ -6,6 +6,13 @@ from src.agent.tools import WeatherTool, WritingTool
 from src.agent.orchestrator import AgentOrchestrator
 import asyncio
 
+
+from src.device_stream import output_stream
+from src.data_preprocessing import preprocess_and_split_data
+import matplotlib
+matplotlib.use('Qt5Agg')  # Set the backend to Qt5Agg
+import matplotlib.pyplot as plt
+
 lock = asyncio.Lock()
 
 
@@ -14,22 +21,52 @@ async def write_warnings_log(device_output) -> None:
     warnings_log = []
     warnings_log_path = "warnings_log.json"
 
-    while True:
-        await asyncio.sleep(0.1)
-        try:
-            current_output = next(device_output)
-        except StopIteration:
-            print("Device output exhausted. Stopping logging.")
-            return
+    # turning interactive mode on
+    plt.ion()
 
-        warning = check_temperature_warning(current_output, 17., 19.8)
-        print(warning)
+    # inital data
+    temp_data = []
+    ts_data = []
 
-        if warning:
-            warnings_log.append(warning)
+
+    # creating the first plot and frame
+    fig, ax = plt.subplots(figsize=(10, 8))
+    graph = ax.plot(ts_data,temp_data,'b', label="Temperature (°C)")[0]
+    plt.ylim(10,30)
+    ax.set_ylabel("Temperature (°C)")
+    plt.xticks(rotation=90)
+
+    while plt.fignum_exists(fig.number):
+            await asyncio.sleep(0.1)
+            try:
+                current_output = next(device_output)
+            except StopIteration:
+                print("Device output exhausted. Stopping logging.")
+                return
+
+            warning = check_temperature_warning(current_output, 17., 19.8)
+            print(warning)
+
+            if warning:
+                warnings_log.append(warning)
+                
+                async with lock:
+                    write_json_file(warnings_log_path, warnings_log)
+
             
-            async with lock:
-                write_json_file(warnings_log_path, warnings_log)
+            ts_data.append(current_output["ts"])
+            temp_data.append(current_output["temp"]) 
+            if len(ts_data) > 50:
+                ts_data.pop(0)
+                temp_data.pop(0)
+
+            graph.remove()
+
+
+            graph = ax.plot(ts_data,temp_data,'b', label="Temperature (°C)")[0]
+            plt.xlim(ts_data[0], ts_data[-1])
+
+            plt.pause(0.01)
 
 
 async def write_agent_messages():
@@ -59,22 +96,11 @@ async def write_agent_messages():
         print("New warning messages found! We pass them to the agent...")
         warnings_log_list = update_warnings_log_list
         
-        agent_message = orchestrator.run(warnings_log_list)
+        # agent_message = orchestrator.run(warnings_log_list)
+        agent_message = "dummy_message"
         update_json_list(llm_messages_path, agent_message)
 
 
-async def graph():
-    # Launch the external Python script (file.py) as a subprocess.
-    process = await asyncio.create_subprocess_exec(
-        "python", "graph.py",
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE
-    )
-    stdout, stderr = await process.communicate()
-    if stdout:
-        print("Script output:", stdout.decode())
-    if stderr:
-        print("Script errors:", stderr.decode())
 async def main():
     """Main async function to run data monitoring."""
     
@@ -85,6 +111,6 @@ async def main():
     device_output = output_stream(df)
     
     # Start the stream, check the temperature and use the agent
-    await asyncio.gather(graph(), write_warnings_log(device_output), write_agent_messages())
+    await asyncio.gather(write_warnings_log(device_output), write_agent_messages())
 
 asyncio.run(main())

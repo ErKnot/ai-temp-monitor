@@ -5,6 +5,7 @@ import matplotlib
 matplotlib.use('Qt5Agg')  # Set the backend to Qt5Agg
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import time
 
 
 # generate the data stream
@@ -30,10 +31,13 @@ plt.xticks(rotation=90)
 
 
 while plt.fignum_exists(fig.number):
-    current_output = next(device_output)
-    ts_data.append(current_output["ts"])
-    temp_data.append(current_output["temp"])
 
+    # update the data
+    current_output = next(device_output)
+
+    # store the data in queues of lenght 50
+    ts_data.append(current_output["ts"])
+    temp_data.append(current_output["temp"]) 
     if len(ts_data) > 50:
         ts_data.pop(0)
         temp_data.pop(0)
@@ -45,4 +49,7 @@ while plt.fignum_exists(fig.number):
     plt.xlim(ts_data[0], ts_data[-1])
 
     plt.pause(0.01)
+    # time.sleep(0.1)
+
+
 
