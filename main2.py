@@ -37,38 +37,40 @@ async def graph_and_warnings(device_output) -> None:
     # updating the stream, check the temperature for warning and then update the graph
     while plt.fignum_exists(fig.number):
             
-            # update the stream
-            try:
-                current_output = next(device_output)
-            except StopIteration:
-                print("Device output exhausted. Stopping logging.")
-                return
+        # update the stream
+        try:
+            current_output = next(device_output)
+        except StopIteration:
+            print("Device output exhausted. Stopping logging.")
+            return
 
-            # check the temperature and save it in a log file
-            warning = check_temperature_warning(current_output, 17., 19.8)
-            print(warning)
+        # check the temperature and save it in a log file
+        warning = check_temperature_warning(current_output, 17., 19.8)
+        print(warning)
 
-            if warning:
-                warnings_log.append(warning)
-                
-                async with lock:
-                    write_json_file(warnings_log_path, warnings_log)
+        if warning:
+            warnings_log.append(warning)
+            
+            async with lock:
+                write_json_file(warnings_log_path, warnings_log)
 
-            # updating the data queues of max lenght 50
-            ts_data.append(current_output["ts"])
-            temp_data.append(current_output["temp"]) 
-            if len(ts_data) > 50:
-                ts_data.pop(0)
-                temp_data.pop(0)
+        # updating the data queues of max lenght 50
+        ts_data.append(current_output["ts"])
+        temp_data.append(current_output["temp"]) 
+        if len(ts_data) > 50:
+            ts_data.pop(0)
+            temp_data.pop(0)
 
-            graph.remove()
+        graph.remove()
 
 
-            graph = ax.plot(ts_data,temp_data,'b', label="Temperature (°C)")[0]
-            plt.xlim(ts_data[0], ts_data[-1])
+        graph = ax.plot(ts_data,temp_data,'b', label="Temperature (°C)")[0]
+        plt.xlim(ts_data[0], ts_data[-1])
 
-            plt.pause(0.01)
+        plt.pause(0.01)
 
+    # when closing the graph
+    raise Exception
 
 async def write_agent_messages():
     """Reads warnings and generates AI messages if new warnings appear."""
@@ -102,6 +104,7 @@ async def write_agent_messages():
         update_json_list(llm_messages_path, agent_message)
 
 
+
 async def main():
     """Main async function to run data monitoring."""
     
@@ -111,7 +114,14 @@ async def main():
     df = dfs_dict["df1"]
     device_output = output_stream(df)
     
-    # Start the stream, check the temperature and use the agent
-    await asyncio.gather(graph_and_warnings(device_output), write_agent_messages())
+    # run the functions concurrently
+    try:
+        async with asyncio.TaskGroup() as tg:
+            tg.create_task(graph_and_warnings(device_output))
+            tg.create_task(write_agent_messages())
+    
+    # stop the program when closing the graph
+    except* Exception:
+        print("Bye!")
 
 asyncio.run(main())
