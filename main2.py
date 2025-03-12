@@ -4,46 +4,47 @@ from src.my_warnings import check_temperature_warning
 from src.file_io import read_json_file, update_json_list, write_json_file
 from src.agent.tools import WeatherTool, WritingTool
 from src.agent.orchestrator import AgentOrchestrator
+
 import asyncio
+lock = asyncio.Lock()
 
-
-from src.device_stream import output_stream
-from src.data_preprocessing import preprocess_and_split_data
 import matplotlib
 matplotlib.use('Qt5Agg')  # Set the backend to Qt5Agg
 import matplotlib.pyplot as plt
 
-lock = asyncio.Lock()
 
 
-async def write_warnings_log(device_output) -> None:
+async def graph_and_warnings(device_output) -> None:
     """Monitors temperature warnings and logs them to a JSON file."""
     warnings_log = []
     warnings_log_path = "warnings_log.json"
 
+    # itializing the graph 
     # turning interactive mode on
     plt.ion()
 
-    # inital data
+    # initalizing the data queues
     temp_data = []
     ts_data = []
 
-
-    # creating the first plot and frame
+    # creating the cartesian plane
     fig, ax = plt.subplots(figsize=(10, 8))
     graph = ax.plot(ts_data,temp_data,'b', label="Temperature (°C)")[0]
     plt.ylim(10,30)
     ax.set_ylabel("Temperature (°C)")
     plt.xticks(rotation=90)
 
+    # updating the stream, check the temperature for warning and then update the graph
     while plt.fignum_exists(fig.number):
-            await asyncio.sleep(0.1)
+            
+            # update the stream
             try:
                 current_output = next(device_output)
             except StopIteration:
                 print("Device output exhausted. Stopping logging.")
                 return
 
+            # check the temperature and save it in a log file
             warning = check_temperature_warning(current_output, 17., 19.8)
             print(warning)
 
@@ -53,7 +54,7 @@ async def write_warnings_log(device_output) -> None:
                 async with lock:
                     write_json_file(warnings_log_path, warnings_log)
 
-            
+            # updating the data queues of max lenght 50
             ts_data.append(current_output["ts"])
             temp_data.append(current_output["temp"]) 
             if len(ts_data) > 50:
@@ -111,6 +112,6 @@ async def main():
     device_output = output_stream(df)
     
     # Start the stream, check the temperature and use the agent
-    await asyncio.gather(write_warnings_log(device_output), write_agent_messages())
+    await asyncio.gather(graph_and_warnings(device_output), write_agent_messages())
 
 asyncio.run(main())
