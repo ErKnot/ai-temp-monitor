@@ -13,4 +13,7 @@ df0 = dfs_dict["df0"]
 device_output = output_stream(df0)
 
 for _ in range(10):
-    print(next(device_output))
+    current_output = next(device_output)
+    
+    print(type(current_output))
+    break
