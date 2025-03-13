@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 # from src.gemini import GeminiTempWarningMonitorAgent 
 
 
@@ -48,7 +49,8 @@ def check_temperature_warning(current_output: dict, lower_threshold: float, uppe
     monitor_message = monitor_temperature(current_output["temp"], lower_threshold, upper_threshold)
     if monitor_message:
         warning = {
-                    "datetime": current_output["ts"].isoformat(),
+                    # "datetime": current_output["ts"].isoformat(),
+                    "datetime": datetime.now().isoformat(),
                     "temperature": current_output["temp"],
                     "warning_message": monitor_message
                 }

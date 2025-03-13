@@ -43,11 +43,12 @@ You will be provided with the warnings to analyzen, a context that tracks previo
 {", ".join([f"- {tool.name()}: {tool.description()}" for tool in self.tools])}
 
 ### Guidelines ###
+_ The warnings messages comes from an a sensor placed in Brussels.
 - Some tasks may require multiple agents.
 - The original user input could contain multiple tasks.
 - Use the context to understand previous actions taken.
 - Read the context carefully before selecting the next step.
-- If no further action is required, set `action = "respond_to_user"` and as 'input' copy the response ot the Writing Tool. 
+- If no further action is required, set `action = "respond_to_user"` and as 'input' copy the response of the Writing Tool. 
 - If you decide to use a tool you will return the tool name in the form of {self.response_format}
 
 ```json

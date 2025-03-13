@@ -1,6 +1,6 @@
 from src.agent.tools.base_tool import Tool
 from dotenv import load_dotenv
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime 
 from textwrap import dedent
 import httpx
 import os
@@ -46,18 +46,25 @@ class WeekAvgTempTool(Tool):
     def description(self):
         return dedent(
                 """
-                Return a location history weather information of the last 7 days.
+                Return a a place average temperature data of the last 7 days.
                 It take as input the name of the place, example: "Brussels"
                 """
                 ) 
 
-    def use(self, location):
-        past_date = date.today() - timedelta(days=7) 
-        today_date = date.today()
+    def use(self, location: str):
+        end_date = date.today()
+        start_date = end_date - timedelta(days=7) 
         week_avgtemp = []
+        # week_avgtemp = {"dates": [],
+        #                 "avgtemp_c": []
+        #                 } 
         
-        for _ in daterange(past_date, today_date):
-            week_avgtemp.append(self.weather_api_client.get_avgtemp(_))
+        for _ in daterange(start_date, end_date):
+            response = self.weather_api_client.get_avgtemp(_)
+            # week_avgtemp["dates"].append(response["date"])
+            # week_avgtemp["avgtemp_c"].append(response["avgtemp_c"])
+            week_avgtemp.append(response)
 
+    
         return week_avgtemp
 

@@ -8,4 +8,4 @@ dfs_dict = preprocess_and_split_data(
         order_by = "ts",
         )
 df0 = dfs_dict["df0"]
-print(df0.head())
+print(df0)

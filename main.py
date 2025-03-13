@@ -12,6 +12,7 @@ import matplotlib
 matplotlib.use('Qt5Agg')  # Set the backend to Qt5Agg
 import matplotlib.pyplot as plt
 
+from datetime import datetime
 from typing import Iterator
 
 async def plot_and_log_warnings(device_output: Iterator[dict]) -> None:
@@ -73,7 +74,8 @@ async def plot_and_log_warnings(device_output: Iterator[dict]) -> None:
                 write_json_file(warnings_log_path, warnings_log)
 
         # updating the data queues of max lenght 50
-        ts_data.append(current_output["ts"])
+        # ts_data.append(current_output["ts"])
+        ts_data.append(datetime.now())
         temp_data.append(current_output["temp"]) 
         if len(ts_data) > 50:
             ts_data.pop(0)
@@ -85,8 +87,8 @@ async def plot_and_log_warnings(device_output: Iterator[dict]) -> None:
         graph = ax.plot(ts_data,temp_data,'b', label="Temperature (°C)")[0]
         plt.xlim(ts_data[0], ts_data[-1])
 
-        plt.pause(0.005)
-        await asyncio.sleep(0.005)
+        plt.pause(0.05)
+        await asyncio.sleep(0.05)
 
         # fig.canvas.draw_idle()  # Non-blocking redraw
         # await asyncio.sleep(0.01)  # Yield to other tasks
@@ -141,8 +143,8 @@ async def write_agent_messages() -> None:
         print("New warning messages found! We pass them to the agent...")
         warnings_log_list = update_warnings_log_list
         
-        # agent_message = orchestrator.run(warnings_log_list)
-        agent_message = "dummy_message"
+        agent_message = orchestrator.run(warnings_log_list)
+        # agent_message = "dummy_message"
         update_json_list(llm_messages_path, agent_message)
 
 
