@@ -1,3 +1,6 @@
 [
-    "### Warnings:\n{'datetime': '2020-07-12T00:26:47.711263418', 'temperature': 6.800000190734863, 'warning_message': 'Warning: the temperature 6.800000190734863 \u00b0C is below the lower_threshold: 17.0 \u00b0C.'}\n\n### Context\n"
+    "### Warnings:\n{'datetime': '2020-07-12T00:26:47.711263418', 'temperature': 6.800000190734863, 'warning_message': 'Warning: the temperature 6.800000190734863 \u00b0C is below the lower_threshold: 17.0 \u00b0C.'}\n\n### Context\n",
+    "dummy_message",
+    "dummy_message",
+    "dummy_message"
 ]

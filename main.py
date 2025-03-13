@@ -85,10 +85,11 @@ async def plot_and_log_warnings(device_output: Iterator[dict]) -> None:
         graph = ax.plot(ts_data,temp_data,'b', label="Temperature (°C)")[0]
         plt.xlim(ts_data[0], ts_data[-1])
 
-        # plt.pause(0.005)
+        plt.pause(0.005)
+        await asyncio.sleep(0.005)
 
-        fig.canvas.draw_idle()  # Non-blocking redraw
-        await asyncio.sleep(0.01)  # Yield to other tasks
+        # fig.canvas.draw_idle()  # Non-blocking redraw
+        # await asyncio.sleep(0.01)  # Yield to other tasks
     # when closing the graph
     raise Exception
 
@@ -140,9 +141,9 @@ async def write_agent_messages() -> None:
         print("New warning messages found! We pass them to the agent...")
         warnings_log_list = update_warnings_log_list
         
-        agent_message = orchestrator.run(warnings_log_list)
+        # agent_message = orchestrator.run(warnings_log_list)
         agent_message = "dummy_message"
-        # update_json_list(llm_messages_path, agent_message)
+        update_json_list(llm_messages_path, agent_message)
 
 
 
