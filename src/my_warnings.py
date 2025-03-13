@@ -25,6 +25,7 @@ def monitor_temperature(temperature: float, lower_threshold: float, upper_thresh
 
 
 
+
 def check_temperature_warning(current_output: dict, lower_threshold: float, upper_threshold: float) -> dict | None:
     """
     Checks if the current temperature exceeds the defined interval and returns 

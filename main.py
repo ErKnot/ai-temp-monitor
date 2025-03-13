@@ -2,7 +2,7 @@ from src.data_preprocessing import preprocess_and_split_data
 from src.device_stream import output_stream
 from src.my_warnings import check_temperature_warning
 from src.file_io import read_json_file, update_json_list, write_json_file
-from src.agent.tools import WeatherTool, WritingTool
+from src.agent.tools import WeatherTool, WritingTool, WeekAvgTempTool
 from src.agent.orchestrator import AgentOrchestrator
 
 import asyncio
@@ -55,7 +55,7 @@ async def plot_and_log_warnings(device_output: Iterator[dict]) -> None:
     # updating the stream, check the temperature for warning and then update the graph
     while plt.fignum_exists(fig.number):
             
-        # update the stream
+        # update the stream if the generator still yield a value
         try:
             current_output = next(device_output)
         except StopIteration:
@@ -85,8 +85,10 @@ async def plot_and_log_warnings(device_output: Iterator[dict]) -> None:
         graph = ax.plot(ts_data,temp_data,'b', label="Temperature (°C)")[0]
         plt.xlim(ts_data[0], ts_data[-1])
 
-        plt.pause(0.01)
+        # plt.pause(0.005)
 
+        fig.canvas.draw_idle()  # Non-blocking redraw
+        await asyncio.sleep(0.01)  # Yield to other tasks
     # when closing the graph
     raise Exception
 
@@ -115,9 +117,10 @@ async def write_agent_messages() -> None:
     warnings_log_list = []
     warnings_log_path = "warnings_log.json"
     llm_messages_path = "llm_messages.json"
-    weather_tool = WeatherTool()
+    # weather_tool = WeatherTool()
+    avg_temp_tool = WeekAvgTempTool()
     writing_tool = WritingTool()
-    orchestrator = AgentOrchestrator([weather_tool, writing_tool])
+    orchestrator = AgentOrchestrator([avg_temp_tool, writing_tool])
 
     while True:
         await asyncio.sleep(1)
@@ -137,9 +140,9 @@ async def write_agent_messages() -> None:
         print("New warning messages found! We pass them to the agent...")
         warnings_log_list = update_warnings_log_list
         
-        # agent_message = orchestrator.run(warnings_log_list)
+        agent_message = orchestrator.run(warnings_log_list)
         agent_message = "dummy_message"
-        update_json_list(llm_messages_path, agent_message)
+        # update_json_list(llm_messages_path, agent_message)
 
 
 

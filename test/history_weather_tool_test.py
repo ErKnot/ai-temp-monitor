@@ -1,6 +1,6 @@
-from src.agent.tools.history_weather_tool import HistoryWeatherTool
+from src.agent.tools.history_weather_tool import HistoryWeatherTool, WeatherApiClient, daterange
+from datetime import date, timedelta
 
-h_w_t = HistoryWeatherTool()
-print(h_w_t.name())
-print(h_w_t.description())
-print(h_w_t.use("Brussels"))
+h_w_tool = HistoryWeatherTool()
+
+print(h_w_tool.use())
