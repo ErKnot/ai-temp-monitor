@@ -7,6 +7,7 @@ Create an agent that interprets the warning message of the sensor output to crea
 - right now the agent doesn't really know where the temperature it receive comes from. Need to add context in a way or the other.
 
 - I don't like how the functions in my_warnings.py are structured.
+- Did some changings in the functions in main.py to make the time of the restream correspond to the current time. But in an ugly way. It surely need to be modified.
 
 ## IMPROVEMENTS
 - The tools have a method description. where it is described what they do and wahat they need as input. This method is used to describe the tool to an LLM. Instead, write a proper docstring and pass it to the LLM.
