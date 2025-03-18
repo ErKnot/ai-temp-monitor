@@ -1,4 +1,5 @@
 import asyncio
+lock = asyncio.Lock()
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -6,6 +7,8 @@ matplotlib.use("Qt5Agg")
 
 from src.data_preprocessing import preprocess_and_split_data
 from src.device_stream import output_stream
+from src.my_warnings import check_temperature_warning
+from src.file_io import read_json_file, update_json_list, write_json_file
 
 from datetime import datetime
 import time
@@ -43,12 +46,21 @@ class PlotTemp:
 
 
 def stream_data(temp_list, dates_list, device_output):
+    warnings_log = []
+    warnings_log_path = "warnings_log.json"
     while True:
+        time.sleep(0.1)
         current_output = next(device_output)
         temp_list.append(current_output["temp"])
         print(temp_list)
         dates_list.append(datetime.now().isoformat())
-        time.sleep(0.1)
+
+        warning = check_temperature_warning(current_output, 17., 19.8)
+
+        if warning:
+            warnings_log.append(warning)
+
+            write_json_file(warnings_log_path, warnings_log)
 
 async def stream_data_async(temp_list, dates_list, device_output):
     return await asyncio.to_thread(stream_data, temp_list, dates_list, device_output)
@@ -69,9 +81,6 @@ async def main():
     async with asyncio.TaskGroup() as tg:
         task1 = tg.create_task(stream_data_async(temp_list, dates_list, device_output))
         task2 = tg.create_task(plot.plot())
-    # await asyncio.gather(stream_data_async(temp_list, dates_list, device_output),
-    #                      plot.plot()
-    #                      )
         
 
 asyncio.run(main())
