@@ -1,3 +1,4 @@
+
 import asyncio
 lock = asyncio.Lock()
 import matplotlib
@@ -9,42 +10,16 @@ from src.data_preprocessing import preprocess_and_split_data
 from src.device_stream import output_stream
 from src.my_warnings import check_temperature_warning
 from src.file_io import read_json_file, update_json_list, write_json_file
+from src.agent.tools import WeatherTool, WritingTool, WeekAvgTempTool
+from src.agent.orchestrator import AgentOrchestrator
 
 from datetime import datetime
 import time
 
-class PlotTemp:
-    def __init__(self, temp_list, dates_list):
-        self.temp_vals = temp_list
-        self.dates_vals = dates_list
-
-    def update_graph(self, frame):
-        temp_vals = self.temp_vals[-20:]
-        dates_vals = self.dates_vals[-20:]
-        self.ax.set_xlim(min(dates_vals), max(dates_vals))
-        self.ax.set_ylim(0,40)
-
-        self.animate_plot.set_data(dates_vals, temp_vals)
-        return self.animate_plot,
-        
-    async def plot(self):
-        # plt.style.use("fivethirtyeight")
-        self.fig, self.ax = plt.subplots()
-        plt.xticks(rotation=45)
-        plt.subplots_adjust(bottom=0.35)
-        self.animate_plot, = self.ax.plot([], [], lw=2)
-
-        ani = FuncAnimation(
-                fig=self.fig,
-                func=self.update_graph,
-                frames=100,
-                interval=100
-                )
-        plt.show()
 
 
 
-async def write_agent_messages() -> None:
+def write_agent_messages() -> None:
     """
     Monitors a warnings log file for new warnings and generates AI-driven messages when new warnings appear.
 
@@ -69,15 +44,13 @@ async def write_agent_messages() -> None:
     warnings_log_list = []
     warnings_log_path = "warnings_log.json"
     llm_messages_path = "llm_messages.json"
-    # weather_tool = WeatherTool()
     avg_temp_tool = WeekAvgTempTool()
     writing_tool = WritingTool()
     orchestrator = AgentOrchestrator([avg_temp_tool, writing_tool])
 
-    await asyncio.sleep(1)
+    time.sleep(1)
 
-    async with lock:
-        update_warnings_log_list = read_json_file(warnings_log_path)
+    update_warnings_log_list = read_json_file(warnings_log_path)
 
     # Update the wornings_log list with the new warnings and run the agent
     print("New warning messages found! We pass them to the agent...")
@@ -87,14 +60,14 @@ async def write_agent_messages() -> None:
     # agent_message = "dummy_message"
     update_json_list(llm_messages_path, agent_message)
 
-def stream_data(temp_list, dates_list, device_output):
+async def stream_data(temp_list, dates_list, device_output):
     warnings_log = []
     warnings_log_path = "warnings_log.json"
     while True:
-        time.sleep(0.1)
+        await asyncio.sleep(0.1)
         current_output = next(device_output)
         temp_list.append(current_output["temp"])
-        print(temp_list)
+        print(len(temp_list))
         dates_list.append(datetime.now().isoformat())
 
         warning = check_temperature_warning(current_output, 17., 19.8)
@@ -102,12 +75,39 @@ def stream_data(temp_list, dates_list, device_output):
         if warning:
             warnings_log.append(warning)
 
-            write_json_file(warnings_log_path, warnings_log)
+            async with lock:
+                write_json_file(warnings_log_path, warnings_log)
+            
+            asyncio.create_task(asyncio.to_thread(write_agent_messages))
 
-            # await asyncio.to_thread(write_agent_messages)
 
-async def stream_data_async(temp_list, dates_list, device_output):
-    return await asyncio.to_thread(stream_data, temp_list, dates_list, device_output)
+async def plot_temp(temp_data, ts_data):
+    plt.ion()
+    fig, ax = plt.subplots(figsize=(10, 8))
+    graph = ax.plot(ts_data,temp_data,'b', label="Temperature (°C)")[0]
+    plt.ylim(10,30)
+    ax.set_ylabel("Temperature (°C)")
+    plt.xticks(rotation=90)
+    while plt.fignum_exists(fig.number):
+
+        if len(ts_data) > 50:
+            ts_data.pop(0)
+            temp_data.pop(0)
+
+        graph.remove()
+        graph = ax.plot(ts_data,temp_data,'b', label="Temperature (°C)")[0]
+        if len(ts_data) > 0:
+            plt.xlim(ts_data[0], ts_data[-1])
+
+        plt.pause(0.05)
+        await asyncio.sleep(0.05)
+        
+
+        # fig.canvas.draw_idle()  # Non-blocking redraw
+        # await asyncio.sleep(0.01)  # Yield to other tasks
+    # when closing the graph
+    raise Exception
+
 
 
 async def main():
@@ -120,11 +120,10 @@ async def main():
     temp_list = []
     dates_list = []
     
-    plot = PlotTemp(temp_list, dates_list)
-
+    # plot = PlotTemp(temp_list, dates_list)
     async with asyncio.TaskGroup() as tg:
-        task1 = tg.create_task(stream_data_async(temp_list, dates_list, device_output))
-        task2 = tg.create_task(plot.plot())
-        
+       tg.create_task(stream_data(temp_list, dates_list, device_output)) 
+       tg.create_task(plot_temp( temp_list, dates_list))
+
 
 asyncio.run(main())
