@@ -11,3 +11,9 @@ Create an agent that interprets the warning message of the sensor output to crea
 
 ## IMPROVEMENTS
 - The tools have a method description. where it is described what they do and wahat they need as input. This method is used to describe the tool to an LLM. Instead, write a proper docstring and pass it to the LLM.
+
+## USEFULL LINKS
+- Async and plotting:
+https://igorbasko01.github.io/matplotlib/python/asyncio/2024/02/06/live-matplotlib-plot-asyncio.html
+https://simulationbased.com/2022/02/14/measuring-and-visualizing-gpu-power-usage-in-real-time-with-asyncio-and-matplotlib/
+

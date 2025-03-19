@@ -86,7 +86,8 @@ class PlotTemp:
         self.temp_vals = temp_list
         self.dates_vals = dates_list
 
-    def update_graph(self, frame):
+    async def update_graph(self, frame):
+        await asyncio.sleep(0.01)
         temp_vals = self.temp_vals[-20:]
         dates_vals = self.dates_vals[-20:]
         self.ax.set_xlim(min(dates_vals), max(dates_vals))
@@ -108,7 +109,8 @@ class PlotTemp:
                 frames=100,
                 interval=100
                 )
-        plt.show(block=False)
+        plt.show()
+        
 
 
 async def main():
@@ -121,10 +123,10 @@ async def main():
     temp_list = []
     dates_list = []
     
-    # plot = PlotTemp(temp_list, dates_list)
+    plot = PlotTemp(temp_list, dates_list)
     async with asyncio.TaskGroup() as tg:
        tg.create_task(stream_data(temp_list, dates_list, device_output)) 
-       # tg.create_task(plot.plot())
+       tg.create_task(plot.plot())
 
 
 asyncio.run(main())

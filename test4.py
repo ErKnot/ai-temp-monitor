@@ -84,6 +84,7 @@ async def stream_data(temp_list, dates_list, device_output):
 async def plot_temp(temp_data, ts_data):
     plt.ion()
     fig, ax = plt.subplots(figsize=(10, 8))
+    plt.subplots_adjust(bottom=0.35)
     graph = ax.plot(ts_data,temp_data,'b', label="Temperature (°C)")[0]
     plt.ylim(10,30)
     ax.set_ylabel("Temperature (°C)")
@@ -96,7 +97,8 @@ async def plot_temp(temp_data, ts_data):
 
         graph.remove()
         graph = ax.plot(ts_data,temp_data,'b', label="Temperature (°C)")[0]
-        if len(ts_data) > 0:
+
+        if len(ts_data) > 1:
             plt.xlim(ts_data[0], ts_data[-1])
 
         plt.pause(0.05)
