@@ -1,6 +1,6 @@
 [
     {
-        "datetime": "2025-03-24T21:13:59.856977",
+        "datetime": "2025-03-24T21:19:30.128941",
         "temperature": 6.800000190734863,
         "warning_message": "Warning: the temperature 6.800000190734863 \u00b0C is below the lower_threshold: 17.0 \u00b0C."
     }

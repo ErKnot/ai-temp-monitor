@@ -8,28 +8,29 @@ class WritingToolResponse(BaseModel):
     message: str
 
 class WritingTool(Tool):
-    def name(self):
+    def name(self) -> str:
         return "Writing Tool"
 
-    def description(self):
+    def description(self) -> str:
+
         return dedent(
         """
-        Analize the warnings and context and provide possible causes. 
-        It take as input a string with the wornings and the context, for exemple: 
-        "
+        Analize the warnings and context to provide possible causes. 
+        this tool takes as input a string containing wornings and the context formatted as follow: 
+        '''
         ### Warnings:
         all the warnings
 
         ### Context
         the context
-        "
+        '''
         """
         )       
-    def use(self, prompt: str):
+    def use(self, prompt: str) -> str:
 
         prompt = dedent(f"""
         You are an AI assistant responsible of analyzing wornings and diagnosing possible causes.
-        You will be provided with warnings to analyze and a context with some informations usefull for the analysis.
+        You will be provided with warnings to analyze and a context with some informations useful for the analysis.
 
         ### Warnings and context ###
         {prompt}
