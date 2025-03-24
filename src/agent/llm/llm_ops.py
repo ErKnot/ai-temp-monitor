@@ -1,11 +1,12 @@
 from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 load_dotenv()
 import os
 from pydantic import BaseModel
 
 
-def query_llm(prompt: str, response_format: BaseModel):
+def query_llm(prompt: str, response_format: BaseModel, system_instruction: str = None):
     """
     Query a Large Language Model (LLM) using the Gemini API.
 
@@ -25,10 +26,12 @@ def query_llm(prompt: str, response_format: BaseModel):
     response = client.models.generate_content(
             model='gemini-2.0-flash',
             contents=prompt,
-    config={ 
-        'response_mime_type': 'application/json',
-        'response_schema': response_format, 
-            })
+    config=types.GenerateContentConfig( 
+        response_mime_type='application/json',
+        response_schema=response_format, 
+        system_instruction=system_instruction
+            )
+        )
             
     final_response = response.text.strip()
     return final_response

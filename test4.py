@@ -64,7 +64,7 @@ async def stream_data(temp_list, dates_list, device_output):
     warnings_log = []
     warnings_log_path = "warnings_log.json"
     while True:
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.01)
         current_output = next(device_output)
         temp_list.append(current_output["temp"])
         print(len(temp_list))
