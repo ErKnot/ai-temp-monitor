@@ -51,22 +51,20 @@ class AgentOrchestrator:
         warnings = "\n".join(f"{warning}" for warning in warnings)
         context = "\n".join(self.memory)
         available_tools = {", ".join([f"- {tool.name()}: {tool.description()}" for tool in self.tools])}
-        print(colored(f"WARNING:\n{warnings}","red"))
-        print(colored(f"CONTEXT:\n{context}", "blue"))
+        log_message(warnings, "WARNINGS")
+        log_message(context, "CONTEXT")
 
 
         prompt = self.prompt.format(warnings=warnings, context=context, available_tools=available_tools)
         llm_response = query_llm(prompt, OrchestratorResponse, self.system_instruction)
 
         llm_response = json.loads(llm_response)
-        print(colored(f"LLM Response:\n{llm_response}", "yellow"))
+        log_message(llm_response, "ORCHESTRATOR")
 
         self.memory.append(f"Orchestrator: {llm_response}")
 
         action = llm_response["action"]
         input = llm_response["input"]
-
-        print(f"Action identified by LLM: {action}")
 
         if action == "respond_to_user":
             return llm_response
@@ -81,9 +79,8 @@ class AgentOrchestrator:
     def run(self, warnings: list) -> str:
         while True:
             response = self.orchestrate_task(warnings)
-            print(colored(f"Final response of orchestrator:\n{response}", "magenta"))
             if isinstance(response, dict) and response["action"] == "respond_to_user":
-                log_message(f"Reponse from Agent: {response["input"]}", "RESPONSE")
+                log_message(response["input"], "RESPONSE")
                 return response["input"]
             elif response == "No action or agent needed":
                 print("Response from Agent: ", response)
