@@ -72,8 +72,7 @@ class AgentOrchestrator:
             if tool.name() == action:
                 agent_response = tool.use(input)
                 print(f"{action} reponse: {agent_response}")
-                self.memory.append(f"Agent Response for Task: {agent_response}")
-                print(self.memory)
+                self.memory.append(f"{action} response for Task: {agent_response}")
                 return agent_response
 
     def run(self, warnings: list) -> str:

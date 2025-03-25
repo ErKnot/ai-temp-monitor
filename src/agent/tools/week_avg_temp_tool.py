@@ -1,8 +1,8 @@
 from src.agent.tools.base_tool import Tool
+from src.file_io import read_yaml_file
 from dotenv import load_dotenv
 from datetime import date, timedelta, datetime 
 from typing import Generator
-from textwrap import dedent
 import httpx
 import os
 
@@ -19,6 +19,14 @@ class WeatherApiClient:
         self.location = location
 
     def get_avgtemp(self, request_date: str) -> dict:
+        """Fetches the average temperature for a given date.
+
+        Args:
+            request_date (str): The date for which the average temperature is requested in 'YYYY-MM-DD' format.
+
+        Returns:
+            dict: A dictionary containing the date and average temperature in Celsius.
+        """
         params = {
                 "key": self.api_key,
                 "q": self.location,
@@ -35,20 +43,23 @@ class WeatherApiClient:
     
 
 class WeekAvgTempTool(Tool):
+    """Tool to get the average temperature for the past 7 days at a specific location.
+
+    Attributes:
+        weather_api_client (WeatherApiClient): Instance of the WeatherApiClient to fetch weather data.
+        config (dict): Configuration loaded from the YAML file for this tool.
+    """
     def __init__(self):
         self.weather_api_client = WeatherApiClient("Brussels")
+        path_config = "src/agent/config/week_avg_temp_tool.yaml"
+        self.config = read_yaml_file(path_config)
         
 
     def name(self):
-        return "Week Temperatur Tool"
+        return self.config["name"] 
 
     def description(self):
-        return dedent(
-                """
-                Return a place average temperature data of the last 7 days.
-                It take name of the place as input, example: "Brussels"
-                """
-                ) 
+        return self.config["description"]
 
     def use(self, location: str) -> list[dict]:
         end_date = date.today()

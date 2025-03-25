@@ -1,0 +1,6 @@
+name: Week Avarage Temperature Tool
+
+description: |                 
+  Return a place average temperature data of the last 7 days.
+  It take name of the place as input, example: "Brussels"
+
