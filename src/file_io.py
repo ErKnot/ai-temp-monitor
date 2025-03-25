@@ -34,6 +34,7 @@ def update_json_list(file_path: str, content: str) -> None:
 
 
 def read_yaml_file(file_path: str):
+    """Return the content of a .yaml file. If the file doesn't exist it returns a message."""
     if not os.path.exists(file_path):
         print(f"File {file_path} not found")
         return None

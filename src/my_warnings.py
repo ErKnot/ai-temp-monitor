@@ -1,5 +1,12 @@
 import json
 from datetime import datetime
+import time
+from src.agent.tools import WritingTool, WeekAvgTempTool
+from src.agent.orchestrator import AgentOrchestrator
+from src.file_io import read_json_file, update_json_list, write_json_file
+
+
+
 # from src.gemini import GeminiTempWarningMonitorAgent 
 
 
@@ -56,25 +63,43 @@ def check_temperature_warning(current_output: dict, lower_threshold: float, uppe
                 }
         return warning
 
-
-
-def get_agent_warnings(warnings_log_path: str) -> str:
+def write_agent_warnings() -> None:
     """
-    Loads warnings from a log file and generates AI-generated messages 
-    using the GeminiTempWarningMonitorAgent.
+    Monitors a warnings log file for new warnings and generates AI-driven messages when new warnings appear.
 
-    Args:
-        warnings_log_path (str): The file path to the warnings log (JSON format).
+    Parameters:
+    -----------
+    None
 
     Returns:
-        str: The AI-generated warning content.
-    """
-    warnings_log_path = warnings_log_path
-    
-    with open(warnings_log_path, 'r') as file:
-        warnings_log = json.load(file)
+    --------
+    None
 
-    agent = GeminiTempWarningMonitorAgent()
-    agent.load_warnings(warnings_log)
+    Raises:
+    -------
+    None
+
+    Notes:
+    ------
+    - This function assumes the existence of the `WeatherTool`, `WritingTool`, and `AgentOrchestrator` classes.
+    - It assumes that `read_json_file` and `update_json_list` are utility functions for reading from and writing to JSON files.
+    - The agent message generation is currently a placeholder (`"dummy_message"`), and would need to be replaced with actual logic for invoking the orchestrator and processing the warnings.
+    """
+    warnings_log_list = []
+    warnings_log_path = "warnings_log.json"
+    llm_messages_path = "llm_messages.json"
+    avg_temp_tool = WeekAvgTempTool()
+    writing_tool = WritingTool()
+    orchestrator = AgentOrchestrator([avg_temp_tool, writing_tool])
+
+    time.sleep(1)
+
+    update_warnings_log_list = read_json_file(warnings_log_path)
+
+    # Update the wornings_log list with the new warnings and run the agent
+    print("New warning messages found! We pass them to the agent...")
+    warnings_log_list = update_warnings_log_list
     
-    return agent.generate_content()
+    agent_message = orchestrator.run(warnings_log_list)
+    # agent_message = "dummy_message"
+    update_json_list(llm_messages_path, agent_message)
