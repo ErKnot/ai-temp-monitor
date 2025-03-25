@@ -1,4 +1,5 @@
 import json
+import yaml
 import os
 
 def read_json_file(file_path: str) -> dict|list|None:
@@ -32,3 +33,10 @@ def update_json_list(file_path: str, content: str) -> None:
             json.dump(contents_list, file, indent=4)
 
 
+def read_yaml_file(file_path: str):
+    if not os.path.exists(file_path):
+        print(f"File {file_path} not found")
+        return None
+    
+    with open(file_path, "r") as file:
+        return yaml.safe_load(file)

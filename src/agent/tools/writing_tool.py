@@ -30,7 +30,7 @@ class WritingTool(Tool):
 
         prompt = dedent(f"""
         You are an AI assistant responsible of analyzing wornings and diagnosing possible causes.
-        You will be provided with warnings to analyze and a context with some informations useful for the analysis.
+        You will be provided with warnings to analyze and a context with some informations useful for the analysis. The context is provided by an orchestrator and other possible tools.
 
         ### Warnings and context ###
         {prompt}

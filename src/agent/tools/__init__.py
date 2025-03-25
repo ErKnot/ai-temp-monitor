@@ -1,5 +1,4 @@
-from .weather_tool import WeatherTool
+# add here the tools import to import them from src.agent.tools
 from .writing_tool import WritingTool
 from .week_avg_temp_tool import WeekAvgTempTool
 
-# __all__ = ["WeatherTool", "WritingTool"]
