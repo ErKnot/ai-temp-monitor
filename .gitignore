@@ -1,0 +1,11 @@
+# ignore the file with all the data
+/src/data/iot_telemetry_data.csv
+
+# ignore the virtual environment
+.venv/
+
+# ignore all pycache directories
+__pycache__/
+
+# ignore my api_keys
+.env
