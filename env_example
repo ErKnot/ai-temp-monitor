@@ -3,4 +3,8 @@
 # After inserting your api key change its name in .env
 #####
 
+# The LLM used in this project is a gemini-flash model, which require a gemini api key
 GEMINI_API_KEY=enter your api key
+
+# To create the Week_avg_temp_tool I used a free api from https://www.weatherapi.com/
+WEATHER_API=...
